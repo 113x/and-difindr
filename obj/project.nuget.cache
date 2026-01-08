@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "jvrJzeEjsAI=",
+  "success": true,
+  "projectFilePath": "/home/golem/RiderProjects/app/app1/app1.csproj",
+  "expectedPackageFiles": [
+    "/home/golem/.nuget/packages/microsoft.net.illink.tasks/9.0.11/microsoft.net.illink.tasks.9.0.11.nupkg.sha512"
+  ],
+  "logs": []
+}

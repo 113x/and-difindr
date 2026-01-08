@@ -1,0 +1,74 @@
+name: Build Android (Ubuntu)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_SDK_ROOT: ${{ runner.tool_cache }}/android-sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Install Android SDK command-line tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends unzip curl
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          curl -fSL "https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip" -o cmdline.zip
+          unzip -q cmdline.zip -d cmdline
+          mv cmdline/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} --licenses
+
+      - name: Restore workloads and dependencies
+        run: |
+          dotnet --info
+          dotnet workload restore
+          dotnet restore
+
+      - name: Build APK (unsigned)
+        run: |
+          dotnet publish app1.csproj \
+            -f net9.0-android \
+            -c Release \
+            -p:AndroidPackageFormat=apk \
+            -p:ApplicationTitle="app golem" \
+            -p:ApplicationVersion=1 \
+            -p:ApplicationDisplayVersion=1.0 \
+            -p:AndroidPackageFileName=app1.apk \
+            -p:PublishTrimmed=true \
+            -p:TrimMode=full \
+            -o ./artifacts
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./artifacts/**/*.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-apk
+          path: ./artifacts/

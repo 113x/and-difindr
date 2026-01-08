@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net9.0-android</TargetFramework>
+        <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+        <TargetPlatformVersion>34</TargetPlatformVersion>
+        <OutputType>Exe</OutputType>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <ApplicationId>com.appgolem.protection</ApplicationId>
+        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationTitle>app golem</ApplicationTitle>
+        <TrimMode>full</TrimMode>
+        
+        <!-- Build Configuration -->
+        <PublishTrimmed>true</PublishTrimmed>
+        <PublishReadyToRun>false</PublishReadyToRun>
+        <AndroidEnableProfiling>false</AndroidEnableProfiling>
+        <AndroidUseAapt2>true</AndroidUseAapt2>
+        <DebugType>portable</DebugType>
+        <AndroidPackageFileName>app1-signed.apk</AndroidPackageFileName>
+        <AndroidKeyStore>false</AndroidKeyStore>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Android API bindings -->
+        <PackageReference Include="Microsoft.Maui" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <MauiAsset Include="Resources\**" />
+    </ItemGroup>
+</Project>
