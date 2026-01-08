@@ -3,9 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
-  workflow_dispatch: # يسمح بتشغيل البناء يدوياً
+  workflow_dispatch:
 
 jobs:
   build:
@@ -21,27 +19,27 @@ jobs:
         java-version: '17'
         distribution: 'microsoft'
 
-    - name: Setup .NET 9 SDK
+    - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '9.0.x' # نستخدم SDK 9 لبناء مشروع 8
 
-    - name: Install MAUI Android Workload
+    - name: Install MAUI Workload
       run: dotnet workload install android
 
     - name: Restore Dependencies
       run: dotnet restore app1.csproj
 
-    - name: Build and Publish (Release)
+    - name: Build and Publish
       run: |
         dotnet publish app1.csproj \
           -f net8.0-android \
           -c Release \
           -p:AndroidKeyStore=false \
-          -p:AndroidPackageFileName=app1-signed.apk
+          -p:AndroidPackageFileName=app1.apk
 
-    - name: Upload APK Artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: android-apk
+        name: app-golem-release
         path: bin/Release/net8.0-android/publish/*.apk
